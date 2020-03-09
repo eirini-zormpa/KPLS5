@@ -92,7 +92,7 @@ ggplot(NamAccuracy_cond)+
 ```
 
 ```{r join_naming_datasets}
-# To join the timing onsets with the aloud items first separate aloud and silent items from naming data (5376/2 = 2688)
+# To join the timing onsets with the aloud items first separate aloud and silent items from naming data
 aloud <- naming %>%
   filter(Response_type == "aloud")
 
@@ -108,15 +108,15 @@ aloud_all <- inner_join(aloud_onsets, aloud, by = c("Subject", "Dutch_name", "St
 aloud_correct <- aloud_all %>% filter(CorrectName == 1)
 ```
 
-```{r visualise_naming_onsets}
+```{r visualise_naming_onsets_picture}
 Picture_onsets_sub <- aloud_correct %>%
   filter(Stimulus_type == "picture") %>%
   group_by(Subject) %>%
-  summarise(mean.RT=mean(onset)) %>%
+  summarise(mean_RT=mean(onset)) %>%
   arrange(Subject)
 
 ggplot() +
-  geom_histogram(binwidth = 15, aes(x=mean.RT),data=Picture_onsets_sub)
+  geom_histogram(binwidth = 15, aes(x=mean_RT),data=Picture_onsets_sub)
 
 Picture_onsets_trial <- aloud_correct %>%
   filter(Stimulus_type == "picture")
@@ -126,3 +126,42 @@ ggplot() +
   facet_wrap(~Subject)
 ```
 
+```{r check_outliers_picture}
+# Participant 33 seems slower than the rest with a right-tailed distribution and is excluded
+lat_33 <- aloud_correct %>% filter(Subject=="AH33")
+
+mean_33 <- summarise(lat_33, mean_RT = mean(onset), sd_RT = sd(onset))
+
+# exclude participant 33
+aloud_correct %<>% filter(Subject != "AH33")
+```
+
+```{r picture_onsets_table}
+Picture_onsets_descr <- aloud_correct %>%
+  filter(Stimulus_type == "picture") %>%
+  summarise(mean_RT = mean(onset), sd_RT = sd(onset))
+```
+
+```{r visualise_naming_onsets_picture_word}
+PicWord_onsets_sub <- aloud_correct %>%
+  filter(Stimulus_type == "picture+word") %>%
+  group_by(Subject) %>%
+  arrange(Subject)
+
+ggplot() +
+  geom_histogram(binwidth = 15, aes(x=onset),data=PicWord_onsets_sub)
+
+PicWords_onsets_trial <- aloud_correct %>%
+  filter(Stimulus_type == "picture+word")
+
+ggplot() +
+  geom_histogram(binwidth = 20, aes(x=onset),data=PicWords_onsets_trial)+
+  facet_wrap(~Subject)
+```
+
+
+```{r picture_word_onsets_table}
+PicWord_onsets_descr <- aloud_correct %>%
+  filter(Stimulus_type == "picture+word") %>%
+  summarise(mean_RT = mean(onset), sd_RT = sd(onset))
+```
