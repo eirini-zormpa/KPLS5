@@ -25,6 +25,9 @@ library(readr)
 library(magrittr)
 library(ggplot2)
 ```
+# Prepare data
+
+## Naming onset data
 
 ```{r read_local_annotations}
 # read in data
@@ -54,6 +57,7 @@ sanity_check <- aloud_onsets %>%
 sanity_check$no_rows
 ```
 
+## Naming accuracy data
 ```{r read_local_naming_data}
 header = c("Subject","NamingTrial","ID","Probe_type","Stimulus_type","Response_type","File_name","English_name","Dutch_name","Other_A","Other_B","List", "Compound", "Agreement_percentage", "DK_percentage", "Lg10WF", "Familiarity", "Visual_complexity", "Manipulability", "Letters", "Non-word", "CorrectName", "Response")
 
@@ -159,9 +163,19 @@ ggplot() +
   facet_wrap(~Subject)
 ```
 
-
 ```{r picture_word_onsets_table}
 PicWord_onsets_descr <- aloud_correct %>%
   filter(Stimulus_type == "picture+word") %>%
   summarise(mean_RT = mean(onset), sd_RT = sd(onset))
 ```
+
+```{r finalise_naming_dataset}
+#... filter out the *silent* responses of participant 33
+silent %<>% filter(Subject != "AH33")
+
+#And then join the aloud and silent responses.
+naming_correct <- full_join(aloud_correct, silent, by = c("Subject", "Dutch_name", "Stimulus_type", "Response_type", "ID", "Probe_type", "English_name", "CorrectName"))
+```
+
+
+## Memory data
