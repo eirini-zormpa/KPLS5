@@ -1,0 +1,16 @@
+AHa scripts
+
+SPSS - Selecting stimuli, norming, auditing lists
+•	AH_Stimuli_Selection_datalist.sps -- this reads in the file AH_Stimuli.txt and specifies the correct data types for different variables. It creates the SPSS-appropriate file (AH_Stimuli.sas)
+•	BOSS_norms_datalists.sps -- again this creates the SPSS-appropriate datafile (BossNorms.sav) to allow us to use the provided norming data (Appendix_S1.txt and SI1.txt) to be able to create balanced lists.
+•	AH_Match_Norms.sps -- this combines all of the norming information we have (from the naming study, BOSS, SUBTLEX-NL) and saves it in an SPSS-appropriate datafile (AH_Normed_data.sav)
+•	AH_Stimuli_Selection.sps -- this randomly groups my data in 2 evenly-sized groups. I then manually checked how similar the averages of each variable of interest were and repeated until I got datasets that were similar. I am aware this is not the best way to do this and have is not reproducible but I didn't know better at the time. What come out is AH_Grouped_stim.sav
+•	AH_Group_Words_datalist.sps -- this reads the file created by the previous script and ensures the variables of the dataset created before is in the correct type.
+•	AH_Group_Words_analyses.sps -- looks at the above data
+•	AH_Stimuli_Audit_datalist.sps -- there is a bit of jump from before to here. When I was satisfied with my two groups I did the Latin-squares counterbalancing manually in Excel and saved the Lists file. This script reads it in and creates the SPSS datafile and ensures variables are of correct type.
+•	AH_stimuli_Audit.sps -- crosses different variables to ensure the balancing was done properly.
+
+R - Data analysis & visualisation
+•	AHa_BuildDataset.R -- this combines the three raw datafiles (Naming latencies, Naming, Memory) and cleans the data (excludes outlier and naming errors). I used the same script for both the complete dataset and the reduced dataset (the one with shorter memory).
+•	AHa_MEM.R -- This runs the models for the full dataset. The output of the model and the results from the model comparisons are included as comments in the script. The workspace from this has been saved (AHa_MEM_ws.RData).
+•	AHa_MEM _Short.R -- This runs the models for the shorter dataset. The output of the model and the results from the model comparisons are included as comments in the script. The workspace from this has also been saved (AHa_short_MEM_ws.RData).

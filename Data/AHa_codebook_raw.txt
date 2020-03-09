@@ -1,0 +1,57 @@
+RAW FILES (these files have actually been processed a little bit, more info in each section)
+NAMING FOLDER
+1)	AH_NamingOnsets.txt (these come from annotations of the audiofiles. Annotation was partly automated using the AH_Labels.praat script. The speech onsets and offsets and the label annotations were then extracted with the AH_ExtractTimes.praat script and put in this file)
+a.	Subject: the participant ID -- ranges from AH01 to AH43 (note that AH06 and AH33 are excluded).
+b.	Dutch_name: the expected name for a picture in Dutch (as measured from eight Dutch native speakers).
+c.	Stimulus_type: the stimulus condition an item was presented in during a trial. This could be picture-only (i.e. a picture with an unreadable/scrambled label) or picture+word (i.e. a picture with the correct word superimposed).
+d.	Response_type: the response condition for a trial. This could be silent or aloud. The cue for an aloud trial was a green square that appeared around the picture 800 ms after picture onset. The cue for a silent trial was a red square that appeared around the picture 800 ms after picture onset.
+e.	label: the content of the Praat annotation. Each trial has three lines in this datafile. Each line represents one of the three chinks in the annotation. The first chunk always had the response condition (silent or aloud) to make it easier to spot trials in which participants did not follow the naming instruction (i.e. spoke in a silent trial or missed an aloud trial). The second is the same as the "Dutch name" -- the name I was expecting to hear. The third chunk contains comments such as "missed" or the word participants actually said. The reason some information appears twice has to do with how I could get information into Praat (from the name of the file).
+f.	onset: the time in seconds when the chunk started (we only care about the second line in each trial --  that's where the word is)
+g.	offset: the time in seconds when the chunk ended
+h.	Real_onset: the time in ms the chunk started + the 800 mf from the preview (the recording starts with the picture onset)
+i.	onset_ms: the onset of the chink in ms without the preview
+
+2)	AH Naming logfiles folder. This folder contains each participant's logfile from the picture naming experiment. This is a description of the columns that appear in each logfile. The CorrectName column was manually added during annotations.
+a.	Subject: the participant ID (like before)
+b.	NamingTrial: there were 128 trials in the picture naming task. This shows in which position (1-128) an item appeared. The trial order was randomised in Presentation.
+c.	ID: an identifier for each picture -- this number is consistent between tasks, e.g. "feather" is ID 01 in both the naming and the memory task.
+d.	Probe_type: whether an item was a target or foil in this list -- by definition all items in the naming task were targets.
+e.	Stimulus_type: like before (picture-only, picure+word).
+f.	Response_type: like before (aloud, silent).
+g.	File_name: the .jpg file for the picture
+h.	English_name: the English name for a picture
+i.	Dutch_name: the most common Dutch name given to the picture by 8 native speakers of Dutch.
+j.	Other_A: other Dutch names used to refer to the picture.
+k.	Other_B: same
+l.	List: the list a participant competed. This is the same for all trials in each logfile and consistent between naming and memory -- if a participant completed list 1 in the naming they had to compete List 1 in the memory task. There were eight lists used to counterbalance the conditions -- in lists 1-4 items 1-128 were targets and in lists 5-8 items 129-256 were targets. In each of the four lists in which an item was a target it appeared in a different condition (also in the lists where it was a foil -- this was possible because items in the memory task appeared with labels and squares, similar to the naming task).
+m.	Compound: whether the Dutch expected word is a compound (1) or not (0).
+n.	Agreement_percentage: naming agreement in % from the eight norming participants.
+o.	DK_percenatge: "don't know" % from the eight norming participants.
+p.	Lg10WF: log10 word frequency from the SUBTLEX-NL database
+q.	Familiarity: score of the picture, taken from the BOSS database norms
+r.	Visual_complexity:  visual complexity score for the picture, taken from the BOSS database norms
+s.	Manipulability: manipulability score for the picture, taken from the BOSS database norms
+t.	Letters: number of letters in the expected Dutch word
+u.	Non-word: the .png file with the scrambled label (there are 256 of them so each picture has a unique scrambled label)
+v.	CorrectName: Whether the participants gave the correct answer (1) or not (0). This was added manually and evaluated by the first author.
+
+3) AH TextGrids folder -- this contains the annotations of the audio files.
+
+MEMORY FOLDER
+4)	AH Memory folder - each participant's logfile from the memory experiment. Almost all columns are the same as in the AH Naming files so I only note the ones that differ. The Repeated column was manually added during annotations.
+a.	MemoryTrial: there were 256 items in the memory task (128 targets & 128 foils). This shows the trial number/order (1-256) in which an item appeared. Again, this was randomised in Presentation (Column 2).
+b.	Target_button: the button participants were expected to press given the probe type (target vs foil). More specifically, they had to press the left arrow key (1) for targets (items they saw in the naming task) or the right arrow key (2) for foils (Column 22). 
+c.	Response_button: the button they actually pressed (Column 23).
+d.	Correct: whether the response button matched the target button (1) or not (0) (Column 24).
+e.	RT: reaction time. The time between the onset of the picture and the button press (this was not analysed) (Column 25).
+f.	Repeated: whether the name of the (foil) picture had been incorrectly used to name a target picture during the naming task (1; e.g. naming a lemon "lime" and then seeing a lime) or not (0) (Column 26).
+
+PROCESSED FILES
+1) AH_all.RData - the dataset saved at the end of the AH_BuildDataset.R script. It contains the combined data from the three raw file types described above. It is also cleaned, meaning mistakes and outliers have been removed. This is what is used for all analyses reported in the main text (using AHa_MEM.R).
+2) AHa_MEM_ws.RData - the workspace after all analyses have been run, in case you don't want to run the whole script (it takes a while, especially the confidence intervals estimation)
+3) AHa_short.RData - the dataset used (and saved) in the AHa_MEM_Short.R script. This is a slightly shorter dataset, truncated to match the length of the task run in experiment 2 (AHb).
+4) AHa_short_MEM_ws.RData - the  workspace after all analyses of the shorter dataset have been run.
+5) All of these are generated in the AHa_SDT.R script and used for the signal analysis results reported in the Appendix (script to create those plots in AHab folder):
+	- AHa_signaldetection.RData: aggregate data for each person per condition with d' and c values
+	- Ca_Results.RData: summary statistics for c for each condition
+	- Da_Results.RData: summary statistics for d' for each condition
