@@ -26,3 +26,24 @@ library(magrittr)
 library(ggplot2)
 ```
 
+```{r read_annotations}
+# read in data
+nam_onsets <- read_delim(here("Data", "Raw", "Naming","AH_NamingOnsets.txt"), delim = "\t") %>%
+  select(-offset) %>%
+  rename(praat_label = label)
+```
+
+```{r clean_annotations}
+# Keep only the aloud items (42*64 = 2688) and get rid of unnecessary lines from praat annotation (time before and after word).
+# The silent items have no onset and the two chunks with the condition and comments are not useful to me.
+aloud_onsets <- filter(nam_onsets, Response_type == "aloud")  %>%
+  filter(as.character(praat_label) == as.character(Dutch_name))
+
+# Sanity check (same number of aloud trials from all participants)
+sanity_check <- aloud_onsets %>%
+  group_by(Subject) %>%
+  summarise(no_rows = length(Subject))
+
+sanity_check$no_rows
+```
+
