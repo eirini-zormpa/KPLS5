@@ -91,3 +91,38 @@ ggplot(NamAccuracy_cond)+
   facet_wrap(~Subject)
 ```
 
+```{r join_naming_datasets}
+# To join the timing onsets with the aloud items first separate aloud and silent items from naming data (5376/2 = 2688)
+aloud <- naming %>%
+  filter(Response_type == "aloud")
+
+silent <- naming %>%
+  filter(Response_type == "silent")
+
+# Filtering out incorrect trials
+aloud_all <- inner_join(aloud_onsets, aloud, by = c("Subject", "Dutch_name", "Stimulus_type", "Response_type"))%>%
+  select(-onset) %>%
+  rename(onset = Real_onset) %>%
+  mutate(onset = onset - 800)
+
+aloud_correct <- aloud_all %>% filter(CorrectName == 1)
+```
+
+```{r visualise_naming_onsets}
+Picture_onsets_sub <- aloud_correct %>%
+  filter(Stimulus_type == "picture") %>%
+  group_by(Subject) %>%
+  summarise(mean.RT=mean(onset)) %>%
+  arrange(Subject)
+
+ggplot() +
+  geom_histogram(binwidth = 15, aes(x=mean.RT),data=Picture_onsets_sub)
+
+Picture_onsets_trial <- aloud_correct %>%
+  filter(Stimulus_type == "picture")
+
+ggplot() +
+  geom_histogram(binwidth = 20, aes(x=onset),data=Picture_onsets_trial)+
+  facet_wrap(~Subject)
+```
+
