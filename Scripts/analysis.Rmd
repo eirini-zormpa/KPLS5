@@ -17,6 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # install.packages("dplyr")
 # install.packages("magrittr")
 # install.packages("ggplot2")
+# install.packages("lme4")
 
 library(rio)
 library(here)
@@ -24,6 +25,7 @@ library(dplyr)
 library(readr)
 library(magrittr)
 library(ggplot2)
+library(lme4)
 ```
 # Prepare data
 
@@ -179,3 +181,81 @@ naming_correct <- full_join(aloud_correct, silent, by = c("Subject", "Dutch_name
 
 
 ## Memory data
+```{r read_local_memory_data}
+header = c("Subject","MemoryTrial","ID","Probe_type","Stimulus_type","Response_type","File_name","English_name","Dutch_name","Other_A","Other_B","List", "Compound", "Agreement_percentage", "DK_percentage", "Lg10WF", "Familiarity", "Visual_complexity", "Manipulability", "Letters", "Non-word", "Target_button", "Response_button", "Correct", "RT", "Repeated")
+
+filelist = list.files(path = here("Data", "Raw", "Memory"), pattern = ".*.txt")
+
+memory <- read_delim(here("Data", "Raw", "Memory", filelist[1]), delim="\t", col_names = header, locale = locale("nl"), skip = 1)
+
+for (i in 2:length(filelist)){
+  memory2 <- read_delim(here("Data", "Raw", "Memory", filelist[i]), delim="\t", col_names = header, locale = locale("nl"), skip = 1)
+  memory <- merge(memory, memory2, all = T)
+}
+
+rm(memory2)
+```
+
+```{r read_osf_memory_data}
+memory <- rio::import("https://osf.io/48pua/download", "txt")
+```
+
+```{r clean_memory_data}
+memory %<>% select (Subject, MemoryTrial, ID, Probe_type, Stimulus_type, Response_type, English_name, Dutch_name, Target_button, Response_button, Correct, RT, Repeated) %>% 
+  filter(Subject != "AH33")
+```
+
+```{r repeated_names}
+# find out how many repeated items there were (31) and exclude them (repeated items were incorrectly used in naming but refer to objects used as foils in the memory task)
+repeated <- sum(memory$Repeated)
+
+memory %<>% filter(Repeated == 0)
+```
+
+```{r memory_accuracy}
+#Check how accurate individual participants in the memory task
+MemAccuracy_cond <- summarise(group_by(memory, Subject, Stimulus_type, Response_type),
+                              proportion_correct = mean(Correct))
+
+ggplot(MemAccuracy_cond)+
+  geom_point(aes(x=proportion_correct,y=paste(Response_type,Stimulus_type)))+
+  facet_wrap(~Subject)
+```
+
+```{r make_final_dataset}
+#I am dividing the memory trials into to targets and foils to join them with the naming data. Probably not the best way to do it, but it works.
+Memory_targets <- filter(memory, Probe_type == "Target")
+Memory_foils <- filter(memory, Probe_type == "Foil")
+
+#First join the targets, i.e. how people did in the naming task with how they responded to the same stims in the memory task. This will get rid of the incorrect naming trials in the memory dataset.
+AH_Targets <- inner_join(naming_correct, Memory_targets, by = c("Subject", "Dutch_name", "Stimulus_type", "Response_type", "ID", "Probe_type", "English_name"))
+
+#And then join everything together.
+AH_all <- full_join(AH_Targets, Memory_foils, by = c("Subject", "Dutch_name", "Stimulus_type", "Response_type", "ID", "Probe_type", "English_name", "MemoryTrial", "Target_button", "Response_button", "Correct", "RT", "Repeated"))
+
+```
+
+# Analyse data
+```{r set_contrasts}
+#Set contrasts
+AH_all$Probe_type_Base[AH_all$Probe_type == "Foil"] <- -.5
+AH_all$Probe_type_Base[AH_all$Probe_type == "Target"] <- .5
+
+AH_all$Stimulus_type_Base[AH_all$Stimulus_type == "picture+word"] <- -.5  
+AH_all$Stimulus_type_Base[AH_all$Stimulus_type == "picture"] <- .5  
+
+AH_all$Response_type_Base[AH_all$Response_type == "silent"] <- -.5
+AH_all$Response_type_Base[AH_all$Response_type == "aloud"] <- .5
+
+```
+
+```{r base_model}
+Logit.0 <- glmer(1 + Response_button ~ Probe_type_Base*Stimulus_type_Base*Response_type_Base +
+                  (1 | ID) + (1 + Probe_type_Base+Stimulus_type_Base | Subject),
+                 data = AH_all,
+                 family = binomial,
+                 control = glmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=20000)))
+
+summary(Logit.0)
+```
+
