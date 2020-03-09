@@ -11,14 +11,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r packages}
 # install what you don't have
-# install.packages("osfr")
+# install.packages("rio")
 # install.packages("here")
 # install.packages("readr")
 # install.packages("dplyr")
 # install.packages("magrittr")
 # install.packages("ggplot2")
 
-library(osfr)
+library(rio)
 library(here)
 library(dplyr)
 library(readr)
@@ -26,17 +26,24 @@ library(magrittr)
 library(ggplot2)
 ```
 
-```{r read_annotations}
+```{r read_local_annotations}
 # read in data
-nam_onsets <- read_delim(here("Data", "Raw", "Naming","AH_NamingOnsets.txt"), delim = "\t") %>%
+name_onsets_local <- read_delim(here("Data", "Raw", "Naming","AH_NamingOnsets.txt"), delim = "\t") %>%
   select(-offset) %>%
   rename(praat_label = label)
 ```
 
+```{r read_osf_annotations}
+name_onsets <- rio::import("https://osf.io/mvtra/download", "txt") %>%
+  select(-offset) %>%
+  rename(praat_label = label)
+```
+
+
 ```{r clean_annotations}
 # Keep only the aloud items (42*64 = 2688) and get rid of unnecessary lines from praat annotation (time before and after word).
 # The silent items have no onset and the two chunks with the condition and comments are not useful to me.
-aloud_onsets <- filter(nam_onsets, Response_type == "aloud")  %>%
+aloud_onsets <- filter(name_onsets, Response_type == "aloud")  %>%
   filter(as.character(praat_label) == as.character(Dutch_name))
 
 # Sanity check (same number of aloud trials from all participants)
@@ -45,5 +52,42 @@ sanity_check <- aloud_onsets %>%
   summarise(no_rows = length(Subject))
 
 sanity_check$no_rows
+```
+
+```{r read_local_naming_data}
+header = c("Subject","NamingTrial","ID","Probe_type","Stimulus_type","Response_type","File_name","English_name","Dutch_name","Other_A","Other_B","List", "Compound", "Agreement_percentage", "DK_percentage", "Lg10WF", "Familiarity", "Visual_complexity", "Manipulability", "Letters", "Non-word", "CorrectName", "Response")
+
+filelist = list.files(path = here("Data", "Raw", "Naming", "Logfiles"), pattern = ".*.txt")
+
+naming <- read_delim(here("Data", "Raw", "Naming", "Logfiles", filelist[1]), delim="\t", col_names = header, locale = locale("nl"), skip = 1)
+
+for (i in 2:length(filelist)){
+  naming2 <- read_delim(here("AHa", "Data", "Raw", "Naming", "Logfiles", filelist[i]), delim="\t", col_names = header, locale = locale("nl"), skip = 1)
+  naming <- merge(naming, naming2, all = T)
+}
+
+rm(naming2)
+```
+
+```{r read_osf_naming_data}
+naming <- rio::import("https://osf.io/3rv5f/download", "txt")
+```
+
+```{r clean_naming_data}
+naming %<>% 
+  select (Subject, ID, Probe_type, Stimulus_type, Response_type, English_name, Dutch_name, CorrectName) %>%
+  arrange(Subject, Dutch_name)
+```
+
+```{r naming_accuracy}
+nam_acc <- mean(naming$CorrectName)
+  
+#Check how accurate individual participants are with naming
+NamAccuracy_cond <- summarise(group_by(naming, Subject, Stimulus_type, Response_type),
+                              mean_correct = mean(CorrectName))
+
+ggplot(NamAccuracy_cond)+
+  geom_point(aes(x=mean_correct,y=paste(Response_type,Stimulus_type)))+
+  facet_wrap(~Subject)
 ```
 
