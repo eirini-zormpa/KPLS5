@@ -1,0 +1,28 @@
+---
+title: "analysis"
+author: "Eirini Zormpa"
+date: "09/03/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages}
+# install what you don't have
+# install.packages("osfr")
+# install.packages("here")
+# install.packages("readr")
+# install.packages("dplyr")
+# install.packages("magrittr")
+# install.packages("ggplot2")
+
+library(osfr)
+library(here)
+library(dplyr)
+library(readr)
+library(magrittr)
+library(ggplot2)
+```
+
