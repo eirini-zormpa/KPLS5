@@ -29,6 +29,12 @@ library(ggplot2)
 library(lme4)
 library(holepunch)
 ```
+
+```{r add_readme}
+#rrtools::use_readme_rmd()
+```
+
+
 # Prepare data
 
 ## Naming onset data
@@ -269,4 +275,8 @@ write_compendium_description(package = "KLPS5",
 ```{r}
 write_dockerfile(maintainer = "Eirini Zormpa")
 ```
+```{r binder_badge}
+#generate_badge()
+```
+
 
