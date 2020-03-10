@@ -18,6 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # install.packages("magrittr")
 # install.packages("ggplot2")
 # install.packages("lme4")
+# remotes::install_github("karthik/holepunch")
 
 library(rio)
 library(here)
@@ -26,6 +27,7 @@ library(readr)
 library(magrittr)
 library(ggplot2)
 library(lme4)
+library(holepunch)
 ```
 # Prepare data
 
@@ -68,7 +70,7 @@ filelist = list.files(path = here("Data", "Raw", "Naming", "Logfiles"), pattern 
 naming <- read_delim(here("Data", "Raw", "Naming", "Logfiles", filelist[1]), delim="\t", col_names = header, locale = locale("nl"), skip = 1)
 
 for (i in 2:length(filelist)){
-  naming2 <- read_delim(here("AHa", "Data", "Raw", "Naming", "Logfiles", filelist[i]), delim="\t", col_names = header, locale = locale("nl"), skip = 1)
+  naming2 <- read_delim(here("Data", "Raw", "Naming", "Logfiles", filelist[i]), delim="\t", col_names = header, locale = locale("nl"), skip = 1)
   naming <- merge(naming, naming2, all = T)
 }
 
@@ -257,5 +259,14 @@ Logit.0 <- glmer(1 + Response_button ~ Probe_type_Base*Stimulus_type_Base*Respon
                  control = glmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=20000)))
 
 summary(Logit.0)
+```
+
+```{r}
+write_compendium_description(package = "KLPS5", 
+                             description = "A demo of reproducible analysis for the Key Practices for the Languages course, session 5")
+```
+
+```{r}
+write_dockerfile(maintainer = "Eirini Zormpa")
 ```
 
