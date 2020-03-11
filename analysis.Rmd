@@ -10,28 +10,35 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r packages}
-# install what you don't have
-# install.packages("rio")
+## install what you don't have
+# devtools::install_github("benmarwick/rrtools")
 # install.packages("here")
 # install.packages("readr")
-# install.packages("dplyr")
 # install.packages("magrittr")
+# install.packages("rio")
+# install.packages("dplyr")
 # install.packages("ggplot2")
 # install.packages("lme4")
 # remotes::install_github("karthik/holepunch")
 
-library(rio)
+library(rrtools)
 library(here)
-library(dplyr)
 library(readr)
 library(magrittr)
+library(rio)
+library(dplyr)
 library(ggplot2)
 library(lme4)
 library(holepunch)
 ```
 
+```{r add_license}
+# usethis::use_mit_license(name = "Eirini Zormpa")
+```
+
+
 ```{r add_readme}
-#rrtools::use_readme_rmd()
+# rrtools::use_readme_rmd()
 ```
 
 
@@ -41,7 +48,12 @@ library(holepunch)
 
 ```{r read_local_annotations}
 # read in data
-name_onsets_local <- read_delim(here("Data", "Raw", "Naming","AH_NamingOnsets.txt"), delim = "\t") %>%
+setwd("C:/Users/eirin/Documents/PhD/Classes/KPLS2020/KPLS5")
+name_onsets_local <- read_delim("Data/Raw/Naming/AH_NamingOnsets.txt", delim = "\t")
+
+name_onsets_local <- read_delim(here("Data", "Raw", "Naming","AH_NamingOnsets.txt"), delim = "\t")
+
+name_onsets_local %<>%
   select(-offset) %>%
   rename(praat_label = label)
 ```

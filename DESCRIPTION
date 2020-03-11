@@ -10,7 +10,7 @@ Authors@R:
            comment = c(ORCID = "0000-0002-6902-7768"))
 Description: A demo of reproducible analysis for the Key
     Practices for the Languages course, session 5
-License: MIT
+License: MIT + file LICENSE
 Depends: 
     dplyr,
     ggplot2,
