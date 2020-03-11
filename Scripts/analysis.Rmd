@@ -61,11 +61,11 @@ library(holepunch)
 ## Naming data
 
 ```{r read_annotations_local_wd}
-# set working directory to project directory
-setwd("C:/Users/eirin/Documents/PhD/Classes/KPLS2020/KPLS5")
+# set working directory to naming data directory
+setwd("C:/Users/eirin/Documents/PhD/Classes/KPLS2020/KPLS5/Data/Raw/Naming")
 
 # read in annotations
-naming_onsets_local <- read_delim("Data/Raw/Naming/AH_NamingOnsets.txt", delim = "\t")
+naming_onsets_local <- read_delim("AH_NamingOnsets.txt", delim = "\t")
 
 naming_onsets_local %<>%
   select(-offset) %>%
