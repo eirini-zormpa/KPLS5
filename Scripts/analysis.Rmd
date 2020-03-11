@@ -44,31 +44,57 @@ library(holepunch)
 
 # Prepare data
 
-## Naming onset data
+## Naming data
 
-```{r read_local_annotations}
-# read in data
+```{r read_annotations_local_wd}
+# set working directory to project directory
 setwd("C:/Users/eirin/Documents/PhD/Classes/KPLS2020/KPLS5")
-name_onsets_local <- read_delim("Data/Raw/Naming/AH_NamingOnsets.txt", delim = "\t")
 
-name_onsets_local <- read_delim(here("Data", "Raw", "Naming","AH_NamingOnsets.txt"), delim = "\t")
+# read in annotations
+naming_onsets_local <- read_delim("Data/Raw/Naming/AH_NamingOnsets.txt", delim = "\t")
 
-name_onsets_local %<>%
+naming_onsets_local %<>%
   select(-offset) %>%
   rename(praat_label = label)
 ```
 
+```{r read_naming_logfiles_local_here}
+# create header
+header = c("Subject","NamingTrial","ID","Probe_type","Stimulus_type","Response_type","File_name","English_name","Dutch_name","Other_A","Other_B","List", "Compound", "Agreement_percentage", "DK_percentage", "Lg10WF", "Familiarity", "Visual_complexity", "Manipulability", "Letters", "Non-word", "CorrectName", "Response")
+
+# get names of all logfiles
+filelist = list.files(path = here("Data", "Raw", "Naming", "Logfiles"), pattern = ".*.txt")
+
+naming_logfiles_local <- read_delim(here("Data", "Raw", "Naming", "Logfiles", filelist[1]), delim="\t", col_names = header, locale = locale("nl"), skip = 1)
+
+for (i in 2:length(filelist)){
+  naming_logfiles_local2 <- read_delim(here("Data", "Raw", "Naming", "Logfiles", filelist[i]), delim="\t", col_names = header, locale = locale("nl"), skip = 1)
+  naming_logfiles_local <- merge(naming_logfiles_local, naming_logfiles_local2, all = T)
+}
+
+rm(naming_logfiles_local2)
+```
+
+```{r export_naming_logfiles}
+write_delim(naming_logfiles_local, here("Data", "Raw", "Naming", "Logfiles", "AH_naming_logfiles.txt"), delim = "\t")
+```
+
+
 ```{r read_osf_annotations}
-name_onsets <- rio::import("https://osf.io/mvtra/download", "txt") %>%
+naming_onsets <- rio::import("https://osf.io/mvtra/download", "txt")
+
+naming_onset %<>%
   select(-offset) %>%
   rename(praat_label = label)
+
+rm(naming_onsets_local)
 ```
 
 
 ```{r clean_annotations}
 # Keep only the aloud items (42*64 = 2688) and get rid of unnecessary lines from praat annotation (time before and after word).
 # The silent items have no onset and the two chunks with the condition and comments are not useful to me.
-aloud_onsets <- filter(name_onsets, Response_type == "aloud")  %>%
+aloud_onsets <- filter(naming_onsets, Response_type == "aloud")  %>%
   filter(as.character(praat_label) == as.character(Dutch_name))
 
 # Sanity check (same number of aloud trials from all participants)
@@ -77,22 +103,6 @@ sanity_check <- aloud_onsets %>%
   summarise(no_rows = length(Subject))
 
 sanity_check$no_rows
-```
-
-## Naming accuracy data
-```{r read_local_naming_data}
-header = c("Subject","NamingTrial","ID","Probe_type","Stimulus_type","Response_type","File_name","English_name","Dutch_name","Other_A","Other_B","List", "Compound", "Agreement_percentage", "DK_percentage", "Lg10WF", "Familiarity", "Visual_complexity", "Manipulability", "Letters", "Non-word", "CorrectName", "Response")
-
-filelist = list.files(path = here("Data", "Raw", "Naming", "Logfiles"), pattern = ".*.txt")
-
-naming <- read_delim(here("Data", "Raw", "Naming", "Logfiles", filelist[1]), delim="\t", col_names = header, locale = locale("nl"), skip = 1)
-
-for (i in 2:length(filelist)){
-  naming2 <- read_delim(here("Data", "Raw", "Naming", "Logfiles", filelist[i]), delim="\t", col_names = header, locale = locale("nl"), skip = 1)
-  naming <- merge(naming, naming2, all = T)
-}
-
-rm(naming2)
 ```
 
 ```{r read_osf_naming_data}
