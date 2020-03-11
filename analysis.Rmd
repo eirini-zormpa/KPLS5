@@ -258,7 +258,7 @@ AH_all$Response_type_Base[AH_all$Response_type == "aloud"] <- .5
 ```
 
 ```{r base_model}
-Logit.0 <- glmer(1 + Response_button ~ Probe_type_Base*Stimulus_type_Base*Response_type_Base +
+Logit.0 <- glmer(Response_button ~ Probe_type_Base*Stimulus_type_Base*Response_type_Base +
                   (1 | ID) + (1 + Probe_type_Base+Stimulus_type_Base | Subject),
                  data = AH_all,
                  family = binomial,
