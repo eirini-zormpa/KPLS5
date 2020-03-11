@@ -42,6 +42,20 @@ library(holepunch)
 ```
 
 
+```{r}
+# write_compendium_description(package = "KLPS5", 
+#                              description = "A demo of reproducible analysis for the Key Practices for the Languages course, session 5",
+#                              path = here())
+```
+
+```{r}
+# write_dockerfile(maintainer = "Eirini Zormpa")
+```
+
+```{r binder_badge}
+# generate_badge()
+```
+
 # Prepare data
 
 ## Naming data
@@ -80,10 +94,10 @@ write_delim(naming_logfiles_local, here("Data", "Raw", "Naming", "Logfiles", "AH
 ```
 
 
-```{r read_osf_annotations}
+```{r read_annotations_osf}
 naming_onsets <- rio::import("https://osf.io/mvtra/download", "txt")
 
-naming_onset %<>%
+naming_onsets %<>%
   select(-offset) %>%
   rename(praat_label = label)
 
@@ -105,7 +119,7 @@ sanity_check <- aloud_onsets %>%
 sanity_check$no_rows
 ```
 
-```{r read_osf_naming_data}
+```{r read_naming_logfiles_osf}
 naming <- rio::import("https://osf.io/3rv5f/download", "txt")
 ```
 
@@ -211,20 +225,6 @@ naming_correct <- full_join(aloud_correct, silent, by = c("Subject", "Dutch_name
 
 
 ## Memory data
-```{r read_local_memory_data}
-header = c("Subject","MemoryTrial","ID","Probe_type","Stimulus_type","Response_type","File_name","English_name","Dutch_name","Other_A","Other_B","List", "Compound", "Agreement_percentage", "DK_percentage", "Lg10WF", "Familiarity", "Visual_complexity", "Manipulability", "Letters", "Non-word", "Target_button", "Response_button", "Correct", "RT", "Repeated")
-
-filelist = list.files(path = here("Data", "Raw", "Memory"), pattern = ".*.txt")
-
-memory <- read_delim(here("Data", "Raw", "Memory", filelist[1]), delim="\t", col_names = header, locale = locale("nl"), skip = 1)
-
-for (i in 2:length(filelist)){
-  memory2 <- read_delim(here("Data", "Raw", "Memory", filelist[i]), delim="\t", col_names = header, locale = locale("nl"), skip = 1)
-  memory <- merge(memory, memory2, all = T)
-}
-
-rm(memory2)
-```
 
 ```{r read_osf_memory_data}
 memory <- rio::import("https://osf.io/48pua/download", "txt")
@@ -262,8 +262,12 @@ AH_Targets <- inner_join(naming_correct, Memory_targets, by = c("Subject", "Dutc
 
 #And then join everything together.
 AH_all <- full_join(AH_Targets, Memory_foils, by = c("Subject", "Dutch_name", "Stimulus_type", "Response_type", "ID", "Probe_type", "English_name", "MemoryTrial", "Target_button", "Response_button", "Correct", "RT", "Repeated"))
-
 ```
+
+```{r export_analysis_dataset}
+write_rds(AH_all, here("Data", "Processed", "AH_all.Rds"))
+```
+
 
 # Analyse data
 ```{r set_contrasts}
@@ -289,16 +293,5 @@ Logit.0 <- glmer(Response_button ~ Probe_type_Base*Stimulus_type_Base*Response_t
 summary(Logit.0)
 ```
 
-```{r}
-write_compendium_description(package = "KLPS5", 
-                             description = "A demo of reproducible analysis for the Key Practices for the Languages course, session 5")
-```
-
-```{r}
-write_dockerfile(maintainer = "Eirini Zormpa")
-```
-```{r binder_badge}
-#generate_badge()
-```
 
 
