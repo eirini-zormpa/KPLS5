@@ -18,7 +18,6 @@ knitr::opts_chunk$set(echo = TRUE)
 # install.packages("dplyr")
 # install.packages("ggplot2")
 # install.packages("lme4")
-# remotes::install_github("karthik/holepunch")
 
 library(here)
 library(readr)
@@ -27,7 +26,6 @@ library(rio)
 library(dplyr)
 library(ggplot2)
 library(lme4)
-library(holepunch)
 ```
 
 
@@ -266,20 +264,5 @@ Logit.0 <- glmer(Response_button ~ Probe_type_Base*Stimulus_type_Base*Response_t
                  control = glmerControl(optimizer = "bobyqa", optCtrl=list(maxfun=20000)))
 
 summary(Logit.0)
-```
-
-
-
-```{r}
-write_compendium_description(package = "KLPS5",
-                             description = "A demo of reproducible analysis for the Key Practices for the Language Scientist course, session 5")
-```
-
-```{r}
-write_dockerfile(maintainer = "Eirini Zormpa")
-```
-
-```{r binder_badge}
-# generate_badge()
 ```
 
