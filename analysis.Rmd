@@ -50,7 +50,7 @@ naming_onsets_local %<>%
 ```{r read_naming_logfiles_local_here}
 # create header
 header = c("Subject","NamingTrial","ID","Probe_type","Stimulus_type","Response_type","File_name","English_name","Dutch_name","Other_A","Other_B","List", "Compound", "Agreement_percentage", "DK_percentage", "Lg10WF", "Familiarity", "Visual_complexity", "Manipulability", "Letters", "Non-word", "CorrectName", "Response")
-
+here()
 # get names of all logfiles
 filelist = list.files(path = here("Data", "Raw", "Naming", "Logfiles"), pattern = ".*.txt")
 
@@ -276,7 +276,7 @@ write_compendium_description(package = "KLPS5",
 ```
 
 ```{r}
-# write_dockerfile(maintainer = "Eirini Zormpa")
+write_dockerfile(maintainer = "Eirini Zormpa")
 ```
 
 ```{r binder_badge}
