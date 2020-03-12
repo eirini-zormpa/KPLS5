@@ -1,16 +1,15 @@
 Type: Compendium
 Package: KLPS5
-Title: Reproducible Analysis Demo
+Title: Code Demo For Key Practices For The Language Scientist Session 5
 Version: 0.0.1
 Authors@R: 
     person(given = "Eirini",
            family = "Zormpa",
            role = c("aut", "cre"),
            email = "eirini.zormpa@mpi.nl",
-           comment = c(ORCID = "0000-0002-6902-7768"))
 Description: A demo of reproducible analysis for the Key
     Practices for the Languages course, session 5
-License: MIT + file LICENSE
+License: What license it uses
 Depends: 
     dplyr,
     ggplot2,
@@ -21,8 +20,8 @@ Depends:
     magrittr,
     readr,
     rio,
-    rmarkdown
-Remotes: 
+    rmarkdown,
+ Remotes: 
     karthik/holepunch
 Encoding: UTF-8
 LazyData: true
