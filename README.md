@@ -3,12 +3,6 @@
 
 # KLPS5
 
-<!-- badges: start -->
-
-[![Launch Rstudio
-Binder](http://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/eirini-zormpa/KPLS5/master?urlpath=rstudio)
-<!-- badges: end -->
-
 ### How to download or install
 
 You can download this demo as a zip from from this URL:
@@ -25,5 +19,6 @@ remotes::install_github("eirini-zormpa/KPLS5")
 ### Licenses
 
 **Code :** See the [DESCRIPTION](DESCRIPTION) file
+
 **Data :** [CC-0](http://creativecommons.org/publicdomain/zero/1.0/)
 attribution requested in reuse

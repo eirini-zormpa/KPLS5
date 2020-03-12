@@ -16,11 +16,6 @@ Title <- "Demo of reproducible analyses for KPLS session 5"
 
 # KLPS5
 
-<!-- badges: start -->
-[![Launch Rstudio Binder](http://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/eirini-zormpa/KPLS5/master?urlpath=rstudio)
-<!-- badges: end -->
-
-
 ### How to download or install
 
 You can download this demo as a zip from from this URL: </archive/master.zip>
