@@ -2,7 +2,7 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # KLPS5
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/eirini-zormpa/KPLS5/master?urlpath=studio)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/eirini-zormpa/KPLS5/master)
 
 ### How to download or install
 
