@@ -2,7 +2,10 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # KLPS5
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/eirini-zormpa/KPLS5/master)
+
+<!-- badges: start -->
+[![Launch Rstudio Binder](http://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/eirini-zormpa/KPLS5/master?urlpath=rstudio)
+<!-- badges: end -->
 
 ### How to download or install
 
