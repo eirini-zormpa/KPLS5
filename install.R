@@ -1,0 +1,7 @@
+install.packages("here")
+install.packages("readr")
+install.packages("magrittr")
+install.packages("rio")
+install.packages("dplyr")
+install.packages("ggplot2")
+install.packages("lme4")
