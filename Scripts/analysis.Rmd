@@ -11,7 +11,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r packages}
 ## install what you don't have
-# devtools::install_github("benmarwick/rrtools")
 # install.packages("here")
 # install.packages("readr")
 # install.packages("magrittr")
@@ -21,7 +20,6 @@ knitr::opts_chunk$set(echo = TRUE)
 # install.packages("lme4")
 # remotes::install_github("karthik/holepunch")
 
-library(rrtools)
 library(here)
 library(readr)
 library(magrittr)
@@ -32,29 +30,6 @@ library(lme4)
 library(holepunch)
 ```
 
-```{r add_license}
-# usethis::use_mit_license(name = "Eirini Zormpa")
-```
-
-
-```{r add_readme}
-# rrtools::use_readme_rmd()
-```
-
-
-```{r}
-# write_compendium_description(package = "KLPS5", 
-#                              description = "A demo of reproducible analysis for the Key Practices for the Languages course, session 5",
-#                              path = here())
-```
-
-```{r}
-# write_dockerfile(maintainer = "Eirini Zormpa")
-```
-
-```{r binder_badge}
-# generate_badge()
-```
 
 # Prepare data
 
@@ -294,4 +269,17 @@ summary(Logit.0)
 ```
 
 
+
+```{r}
+write_compendium_description(package = "KLPS5",
+                             description = "A demo of reproducible analysis for the Key Practices for the Language Scientist course, session 5")
+```
+
+```{r}
+# write_dockerfile(maintainer = "Eirini Zormpa")
+```
+
+```{r binder_badge}
+# generate_badge()
+```
 
