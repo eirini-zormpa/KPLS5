@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # install.packages("ggplot2")
 # install.packages("lme4")
 
-library(here)
+#library(here)
 library(readr)
 library(magrittr)
 library(rio)
@@ -38,6 +38,11 @@ The **study phase** was a picture naming experiment in which participants saw a 
 The first manipulation tests the effect of coming up with a name.
 The second manipulation tests the effect of saying that name aloud.
 
+To ensure that participants were naming the pictures in the silent trials the naming phase was split as follows:
+* participants saw the pictures without the frames for 800 ms, which should be sufficient for lexical access.
+* then the frame appeared around the picture, signalling whether naming should happen aloud or silently
+* participants had limited amount of time to name the pictures.
+
 The **test phase** was a Yes/No recognition memory task conducted 20 minutes later.
 In this task, participants saw all the pictures from the picture naming task and an equal number of new pictures.
 The pictures were presented with the labels and the frames, exactly as in the study phase.
@@ -45,59 +50,81 @@ Participants were prompted to say "Yes" to the pictures they remembered from the
 
 # Prepare data
 
+The DV here is the response in the memory task.
+However, I can't just look at the data from the memory task.
+First, I need to remove trials that were named incorrectly and participants that were too slow to name the pictures.
+Slow naming could be a sign that those participants were not naming the silent trials.
+Information about whether the naming was correct comes from the logfiles of the naming experiment.
+Information about the naming times comes from the recording annotations.
+
 ## Naming data
 
-```{r read_annotations_local_wd}
-# set working directory to naming data directory
-setwd("C:/Users/eirin/Documents/MPI Psycholinguistics/Teaching/KPLS2020/KPLS5/Data/Raw/Naming")
+First I need to read in my data and have some fun with paths!
 
-# read in annotations
-naming_onsets_local <- read_delim("AH_NamingOnsets.txt", delim = "\t")
+To start, I'm pretending I'm not using a project.
+I read my file using the entire path.
+This works, but of course no one else has the same path as me.
 
-naming_onsets_local %<>%
-  select(-offset) %>%
-  rename(praat_label = label)
+```{r annotations_read_local}
+#naming_onsets_local1 <- read_delim("C:/Users/eirin/Documents/MPI Psycholinguistics/Teaching/KPLS2020/KPLS5/Data/Raw/Naming/AH_NamingOnsets.txt", delim = "\t")
 ```
 
-```{r read_naming_logfiles_local_here}
-# create header
-header = c("Subject","NamingTrial","ID","Probe_type","Stimulus_type","Response_type","File_name","English_name","Dutch_name","Other_A","Other_B","List", "Compound", "Agreement_percentage", "DK_percentage", "Lg10WF", "Familiarity", "Visual_complexity", "Manipulability", "Letters", "Non-word", "CorrectName", "Response")
-here()
-# get names of all logfiles
-filelist = list.files(path = here("Data", "Raw", "Naming", "Logfiles"), pattern = ".*.txt")
+Wait, I'd have to do aaaaaaaaaall that typing every single type I want to read or write a file?
+Having a convenient working directory means less typing.
 
-naming_logfiles_local <- read_delim(here("Data", "Raw", "Naming", "Logfiles", filelist[1]), delim="\t", col_names = header, locale = locale("nl"), skip = 1)
-
-for (i in 2:length(filelist)){
-  naming_logfiles_local2 <- read_delim(here("Data", "Raw", "Naming", "Logfiles", filelist[i]), delim="\t", col_names = header, locale = locale("nl"), skip = 1)
-  naming_logfiles_local <- merge(naming_logfiles_local, naming_logfiles_local2, all = T)
-}
-
-rm(naming_logfiles_local2)
+```{r annotations_read_local_wd}
+#setwd("C:/Users/eirin/Documents/MPI Psycholinguistics/Teaching/KPLS2020/KPLS5")
+#naming_onsets_local2 <- read_delim("Data/Raw/Naming/AH_NamingOnsets.txt", delim = "\t")
 ```
 
-```{r export_naming_logfiles}
-write_delim(naming_logfiles_local, here("Data", "Raw", "Naming", "Logfiles", "AH_naming_logfiles.txt"), delim = "\t")
+Using a project means I don't need to set my working directory anymore--the working directory is automatically set to be the directory where the .Rproject file is.
+The main advantage of not manually setting the working directory is that other people can run your code immediately.
+
+Just having a project does not solve the second problem with the code above.
+R Markdown files reset the working directory to be the directory that contains the current script (in this case "Scripts").
+Using the "here" package solves that.
+
+```{r annotations_read_local_here}
+#naming_onsets_local3 <- read_delim(here("Data", "Raw", "Naming", "AH_NamingOnsets.txt"), delim = "\t")
 ```
 
+But what if I want to share my script with someone that doens't have a local copy of my data?
+Or if I want to make it possible for people to run my code online?
+It's possible to get data into R from the Open Science Framework (and other repositories)!
 
-```{r read_annotations_osf}
+```{r _annotations_read_osf}
 naming_onsets <- rio::import("https://osf.io/mvtra/download", "txt")
 
+summary(naming_onsets)
+```
+
+The summary above shows why you shouldn't touch your raw data.
+I have three different onset columns and **I** can figure out why, but maybe not just anyone who looks at my data.
+
+Now just run everything!
+
+```{r remove_copies}
+#rm(naming_onsets_local1)
+#rm(naming_onsets_local2)
+#rm(naming_onsets_local3)
+```
+
+
+```{r annotations_clean}
 naming_onsets %<>%
   select(-offset) %>%
   rename(praat_label = label)
-
-rm(naming_onsets_local)
 ```
 
 
-```{r clean_annotations}
+```{r annotations_aloud}
 # Keep only the aloud items (42*64 = 2688) and get rid of unnecessary lines from praat annotation (time before and after word).
 # The silent items have no onset and the two chunks with the condition and comments are not useful to me.
 aloud_onsets <- filter(naming_onsets, Response_type == "aloud")  %>%
   filter(as.character(praat_label) == as.character(Dutch_name))
+```
 
+```{r annotations_aloud_check}
 # Sanity check (same number of aloud trials from all participants)
 sanity_check <- aloud_onsets %>%
   group_by(Subject) %>%
@@ -106,11 +133,13 @@ sanity_check <- aloud_onsets %>%
 sanity_check$no_rows
 ```
 
-```{r read_naming_logfiles_osf}
+```{r naming_logfiles_read}
 naming <- rio::import("https://osf.io/3rv5f/download", "txt")
+
+summary(naming)
 ```
 
-```{r clean_naming_data}
+```{r naming_logfiles_clean}
 naming %<>% 
   select (Subject, ID, Probe_type, Stimulus_type, Response_type, English_name, Dutch_name, CorrectName) %>%
   arrange(Subject, Dutch_name)
@@ -176,7 +205,8 @@ aloud_correct %<>% filter(Subject != "AH33")
 ```{r picture_onsets_table}
 Picture_onsets_descr <- aloud_correct %>%
   filter(Stimulus_type == "picture") %>%
-  summarise(mean_RT = mean(onset), sd_RT = sd(onset))
+  summarise(mean_RT = mean(onset),
+            sd_RT = sd(onset))
 ```
 
 ```{r visualise_naming_onsets_picture_word}
@@ -199,7 +229,8 @@ ggplot() +
 ```{r picture_word_onsets_table}
 PicWord_onsets_descr <- aloud_correct %>%
   filter(Stimulus_type == "picture+word") %>%
-  summarise(mean_RT = mean(onset), sd_RT = sd(onset))
+  summarise(mean_RT = mean(onset),
+            sd_RT = sd(onset))
 ```
 
 ```{r finalise_naming_dataset}
@@ -213,11 +244,11 @@ naming_correct <- full_join(aloud_correct, silent, by = c("Subject", "Dutch_name
 
 ## Memory data
 
-```{r read_osf_memory_data}
+```{r memory_data_read}
 memory <- rio::import("https://osf.io/48pua/download", "txt")
 ```
 
-```{r clean_memory_data}
+```{r memory_data_clean}
 memory %<>% select (Subject, MemoryTrial, ID, Probe_type, Stimulus_type, Response_type, English_name, Dutch_name, Target_button, Response_button, Correct, RT, Repeated) %>% 
   filter(Subject != "AH33")
 ```
@@ -257,6 +288,7 @@ write_rds(AH_all, here("Data", "Processed", "AH_all.Rds"))
 
 
 # Analyse data
+
 ```{r set_contrasts}
 #Set contrasts
 AH_all$Probe_type_Base[AH_all$Probe_type == "Foil"] <- -.5
@@ -269,6 +301,8 @@ AH_all$Response_type_Base[AH_all$Response_type == "silent"] <- -.5
 AH_all$Response_type_Base[AH_all$Response_type == "aloud"] <- .5
 
 ```
+
+Run the model and check against the published article!
 
 ```{r base_model}
 Logit.0 <- glmer(Response_button ~ Probe_type_Base*Stimulus_type_Base*Response_type_Base +
