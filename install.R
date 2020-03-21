@@ -1,4 +1,4 @@
-install.packages("here")
+install.packages("knitr")
 install.packages("readr")
 install.packages("magrittr")
 install.packages("rio")
