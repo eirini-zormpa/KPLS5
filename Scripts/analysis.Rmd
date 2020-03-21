@@ -1,5 +1,5 @@
 ---
-title: "analysis"
+title: "Example analysis script"
 author: "Eirini Zormpa"
 date: "09/03/2020"
 output: html_document
@@ -28,6 +28,20 @@ library(ggplot2)
 library(lme4)
 ```
 
+# Overview of experiment
+
+In this experiment, I was interested to see what word production processes affect memory.
+More specifically, I wanted to see if coming up with a word and saying that word aloud affect memory.
+I tested this in a two-part experiment, with a study phase and a test phase.
+
+The **study phase** was a picture naming experiment in which participants saw a picture with either the picture name or a gibberish label superimposed and they had to name the picture aloud or silently prompted by a coloured frame.
+The first manipulation tests the effect of coming up with a name.
+The second manipulation tests the effect of saying that name aloud.
+
+The **test phase** was a Yes/No recognition memory task conducted 20 minutes later.
+In this task, participants saw all the pictures from the picture naming task and an equal number of new pictures.
+The pictures were presented with the labels and the frames, exactly as in the study phase.
+Participants were prompted to say "Yes" to the pictures they remembered from the previous task and "No" to the new pictures.
 
 # Prepare data
 
@@ -35,7 +49,7 @@ library(lme4)
 
 ```{r read_annotations_local_wd}
 # set working directory to naming data directory
-setwd("C:/Users/eirin/Documents/PhD/Classes/KPLS2020/KPLS5/Data/Raw/Naming")
+setwd("C:/Users/eirin/Documents/MPI Psycholinguistics/Teaching/KPLS2020/KPLS5/Data/Raw/Naming")
 
 # read in annotations
 naming_onsets_local <- read_delim("AH_NamingOnsets.txt", delim = "\t")
